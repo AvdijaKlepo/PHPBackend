@@ -5,6 +5,7 @@ namespace App\GraphQL\Queries;
 
 use App\GraphQL\Types\CategoryType;
 use App\Models\AbstractModels\AbstractCategory;
+use App\Models\Factory\CategoryFactory;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use PDO;
@@ -35,7 +36,7 @@ class CategoryQuery extends ObjectType{
                 ],
                 'resolve'=>function($root, $args){
                     $id = $args['id']??3;
-                    $category = AbstractCategory::create($this->pdo,$id);
+                    $category = CategoryFactory::create($this->pdo,$id);
                     return $category->getCategory();
                 }
             ]

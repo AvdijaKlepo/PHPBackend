@@ -1,9 +1,7 @@
 <?php
 namespace App\Models\AbstractModels;
 
-use App\Models\CategoryModels\AllCategory;
-use App\Models\CategoryModels\ClothesCategory;
-use App\Models\CategoryModels\TechCategory;
+
 use PDO;
 
 abstract class AbstractCategory{
@@ -16,16 +14,6 @@ abstract class AbstractCategory{
 
     abstract public function getCategory():array;
 
-    public static function create(PDO $pdo,int $id): AbstractCategory
-    {
-        switch ($id){
-            case 1:
-                return new ClothesCategory($pdo);
-            case 2:
-                return new TechCategory($pdo);
-            default:
-                return new AllCategory($pdo);
-        }
-    }
+
 
 }

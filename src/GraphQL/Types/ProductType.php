@@ -1,8 +1,10 @@
 <?php
 namespace App\GraphQL\Types;
 
-use App\Models\AbstractModels\AbstractProduct;
-use GraphQL\Examples\Blog\Type\ImageType;
+
+
+use App\Models\Factory\AttributeFactory;
+use App\Service\ProductService;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use PDO;
@@ -11,10 +13,19 @@ use PDO;
 class ProductType extends ObjectType
 {
     protected PDO $pdo;
+    protected ProductService $productService;
 
-    public function __construct($pdo)
+
+    public function __construct(PDO $pdo, ProductService $productService)
     {
+
         $this->pdo = $pdo;
+        $this->productService=$productService;
+        $createAttribute = function (int $categoryId){
+            return AttributeFactory::create($this->pdo, $categoryId);
+        };
+
+
         $productType = [
             'name' => 'Product',
             'fields' => [
@@ -26,30 +37,31 @@ class ProductType extends ObjectType
                 'brand' => Type::string(),
                 'attributes' => [
                     'type' => Type::listOf(new AttributeType()),
-                    'resolve' => function ($product) {
+                    'resolve' => function ($product) use ($createAttribute)  {
+                        try {
+                            // Attempt to fetch attributes
+                            $attribute = $createAttribute($product['category_id']);
+                            $attributes = $attribute->getAttribute($product['id']);
 
-                        $abstractProduct = AbstractProduct::create($this->pdo, $product['category_id']);
-                        $attributes = $abstractProduct->getAttributesById($product['id']);
-
-                        return $attributes ?: null;
+                            return !empty($attributes) ? $attributes : null;
+                        } catch (\Exception $e) {
+                            // Log the exception (optional) and return null
+                            error_log($e->getMessage());
+                            return null;
+                        }
                     }
                 ],
                 'images'=>[
                     'type'=>Type::listOf(new GalleryType()),
-                    'resolve' => function ($product) {
-                        $abstractProduct = AbstractProduct::create($this->pdo, $product['category_id']);
-                        $images = $abstractProduct->getImagesById($product['id']);
-
-                        return $images ?: null;
+                    'resolve' => function ($product)  {
+                        return $this->resolveFields($product['id'],'getImagesById');
                     }
                 ],
                 'prices'=>[
                     'type'=>Type::listOf(new PriceType()),
-                    'resolve' => function ($product) {
-                        $abstractProduct = AbstractProduct::create($this->pdo, $product['category_id']);
-                        $prices = $abstractProduct->getPricesById($product['id']);
+                    'resolve' => function ($product){
+                        return $this->resolveFields($product['id'],'getPricesById');
 
-                        return $prices ?: null;
                     }
                 ],
 
@@ -57,5 +69,10 @@ class ProductType extends ObjectType
         ];
 
         parent::__construct($productType);
+    }
+
+    private function resolveFields(string $productId,string $method)
+    {
+        return call_user_func([$this->productService,$method],$productId)??null;
     }
 }

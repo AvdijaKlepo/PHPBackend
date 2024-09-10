@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Controller;
-use App\GraphQL\Queries\AttributeQuery;
 use App\GraphQL\Queries\CategoryQuery;
 use GraphQL\GraphQL;
 use GraphQL\Type\Definition\ObjectType;
@@ -14,7 +13,6 @@ class ProductController
     {
         $productQuery = new ProductQuery($conn);
         $categoryQuery = new CategoryQuery($conn);
-        $attributeQuery = new AttributeQuery($conn);
 
 
         $queryType = new ObjectType([

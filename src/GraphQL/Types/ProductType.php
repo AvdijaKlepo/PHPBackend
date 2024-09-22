@@ -29,7 +29,7 @@ class ProductType extends ObjectType
         $productType = [
             'name' => 'Product',
             'fields' => [
-                'id' => Type::string(),
+                'id' => (Type::string()),
                 'product' => Type::string(),
                 'product_description' => Type::string(),
                 'inStock' => Type::boolean(),

@@ -36,23 +36,27 @@ class ProductQuery extends ObjectType
                 'type'=>Type::listOf(new ProductType($this->pdo,$this->productService)),
                 'args' => [
                     'category_id'=>['type'=>Type::int()],
-                    'id'=>['type'=>Type::string()],
+                    'id'=>['type'=>(Type::string())],
                 ],
 
-                'resolve' => function ($root,$args) {
-                    $productId=$args['id']??null;
+                'resolve' => function ($root, $args) {
+                    $productId = $args['id'] ?? null;
 
-                    if($productId){
-                        $product = (new ProductFactory)->getProductById($this->pdo,$productId);
+                    if ($productId) {
+                        $product = (new ProductFactory)->getProductById($this->pdo, $productId);
                         return $product ? [$product] : null;
                     }
 
+                    if (!isset($args['category_id']) || !is_int($args['category_id'])) {
+                        throw new \Exception('category_id must be an integer');
+                    }
 
-                    $category_id = $args['category_id']?? 3;
-                    $product = ProductFactory::create($this->pdo,$category_id);
+                    $category_id = $args['category_id'];
+                    $product = ProductFactory::create($this->pdo, $category_id);
+                    error_log('category_id: ' . print_r($args['category_id'], true));
                     return $product->getProduct();
-
                 }
+
             ]
         ];
 

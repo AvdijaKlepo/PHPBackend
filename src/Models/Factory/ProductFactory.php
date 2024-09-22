@@ -14,9 +14,9 @@ class ProductFactory
     {
 
         return match ($categoryId) {
-            1=>new TechProduct($pdo),
+            3=>new TechProduct($pdo),
             2=>new ClothesProduct($pdo),
-            default=>new AllProduct($pdo),
+            1=>new AllProduct($pdo),
         };
     }
     public  function getProductById(PDO $pdo,string $productId): ? array{

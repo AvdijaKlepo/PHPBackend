@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controller;
+use App\GraphQL\Mutations\CartMutation;
 use App\GraphQL\Queries\CategoryQuery;
 use GraphQL\GraphQL;
 use GraphQL\Type\Definition\ObjectType;
@@ -13,7 +14,7 @@ class ProductController
     {
         $productQuery = new ProductQuery($conn);
         $categoryQuery = new CategoryQuery($conn);
-
+        $cartMutation = new CartMutation($conn);
 
         $queryType = new ObjectType([
             'name' => 'Query',
@@ -23,22 +24,26 @@ class ProductController
             ),
         ]);
 
-        // Set up GraphQL schema with the Product query
+        $mutationType = new ObjectType([
+            'name' => 'Mutation',
+            'fields' => $cartMutation->getFields(),
+        ]);
+
         $schema = new Schema([
-            'query' => $queryType
+            'query' => $queryType,
+            'mutation' => $mutationType,
         ]);
 
 
-        // Process the GraphQL query
         $rawInput = file_get_contents('php://input');
         $input = json_decode($rawInput, true);
         $query = $input['query'];
+        $variables = $input['variables'] ?? null;
 
-        // Execute the GraphQL query
-        $result = GraphQL::executeQuery($schema, $query);
+
+        $result = GraphQL::executeQuery($schema, $query, null, null, $variables);
         $output = $result->toArray();
 
-        // Send response
         header('Content-Type: application/json');
         return json_encode($output);
     }

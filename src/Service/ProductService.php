@@ -18,6 +18,8 @@ class ProductService {
                                                      JOIN gallery AS G
                                                           ON A.id=G.product_id
                                             WHERE G.product_id=?
+                                        
+                                           
                                         ");
         $stmt->execute([$productId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

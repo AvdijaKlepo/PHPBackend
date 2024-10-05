@@ -25,7 +25,7 @@ class CartMutation extends ObjectType
     public function getFields():array{
         return [
             'addCartItem'=>[
-                'type'=>Type::boolean(),
+                'type'=>Type::int(),
                 'args'=>[
                     'product_id'=>['type'=>Type::nonNull(Type::string())],
                     'product'=>['type'=>Type::nonNull(Type::string())],
@@ -48,9 +48,9 @@ class CartMutation extends ObjectType
         $cart_id = $this->pdo->lastInsertId();
 
 
-        foreach ($attributes as $attribute_name => $display_value) {
-            $stmt = $this->pdo->prepare("INSERT INTO cart_attributes (cart_id, attribute_name, display_value) VALUES (?, ?, ?)");
-            $stmt->execute([$cart_id, $attribute_name, $display_value]);
+        foreach ($attributes as $attribute_name => $product_value) {
+            $stmt = $this->pdo->prepare("INSERT INTO cart_attributes (cart_id, attribute_name, product_value) VALUES (?, ?, ?)");
+            $stmt->execute([$cart_id, $attribute_name, $product_value]);
         }
 
         return $cart_id;

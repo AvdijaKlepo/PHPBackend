@@ -1,35 +1,26 @@
 <?php
 namespace App\GraphQL\Types;
 
-
-
 use App\Models\Factory\AttributeFactory;
 use App\Service\ProductService;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use PDO;
 
-
 class ProductType extends ObjectType
 {
     protected PDO $pdo;
     protected ProductService $productService;
 
-
     public function __construct(PDO $pdo, ProductService $productService)
     {
-
         $this->pdo = $pdo;
-        $this->productService=$productService;
-        $createAttribute = function (int $categoryId){
-            return AttributeFactory::create($this->pdo, $categoryId);
-        };
+        $this->productService = $productService;
 
-
-        $productType = [
+        $config = [
             'name' => 'Product',
             'fields' => [
-                'id' => (Type::string()),
+                'id' => Type::string(),
                 'product' => Type::string(),
                 'product_description' => Type::string(),
                 'inStock' => Type::boolean(),
@@ -37,42 +28,55 @@ class ProductType extends ObjectType
                 'brand' => Type::string(),
                 'attributes' => [
                     'type' => Type::listOf(new AttributeType()),
-                    'resolve' => function ($product) use ($createAttribute)  {
-                        try {
-                            // Attempt to fetch attributes
-                            $attribute = $createAttribute($product['category_id']);
-                            $attributes = $attribute->getAttribute($product['id']);
-
-                            return !empty($attributes) ? $attributes : null;
-                        } catch (\Exception $e) {
-                            // Log the exception (optional) and return null
-                            error_log($e->getMessage());
-                            return null;
-                        }
-                    }
+                    'resolve' => [$this, 'resolveAttributes'],
                 ],
-                'images'=>[
-                    'type'=>Type::listOf(new GalleryType()),
-                    'resolve' => function ($product)  {
-                        return $this->resolveFields($product['id'],'getImagesById');
-                    }
+                'images' => [
+                    'type' => Type::listOf(new GalleryType()),
+                    'resolve' => [$this, 'resolveImages'],
                 ],
-                'prices'=>[
-                    'type'=>Type::listOf(new PriceType()),
-                    'resolve' => function ($product){
-                        return $this->resolveFields($product['id'],'getPricesById');
-
-                    }
+                'prices' => [
+                    'type' => Type::listOf(new PriceType()),
+                    'resolve' => [$this, 'resolvePrices'],
                 ],
-
-            ]
+            ],
         ];
 
-        parent::__construct($productType);
+        parent::__construct($config);
     }
 
-    private function resolveFields(string $productId,string $method)
+
+    public function resolveAttributes($product): ?array
     {
-        return call_user_func([$this->productService,$method],$productId)??null;
+        try {
+
+            $query = "SELECT DISTINCT attribute_name FROM attributes WHERE product_id = ?";
+            $stmt = $this->pdo->prepare($query);
+            $stmt->execute([$product['id']]);
+            $attributeNames = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+            $attributes = [];
+            foreach ($attributeNames as $attributeName) {
+                $attributeHandler = AttributeFactory::create($this->pdo, $attributeName);
+                $attributes = array_merge($attributes, $attributeHandler->getAttribute($product['id']));
+            }
+
+            return !empty($attributes) ? $attributes : null;
+        } catch (\Exception $e) {
+            // Log the exception and return null
+            error_log($e->getMessage());
+            return null;
+        }
+    }
+
+
+    public function resolveImages($product): ?array
+    {
+        return $this->productService->getImagesById($product['id']) ?? null;
+    }
+
+
+    public function resolvePrices($product): ?array
+    {
+        return $this->productService->getPricesById($product['id']) ?? null;
     }
 }

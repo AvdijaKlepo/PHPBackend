@@ -3,8 +3,10 @@
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/src/GraphQL/Mutations/CartMutation.php" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/Models/AbstractModels/AbstractProduct.php" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/Models/AttributeModel/CapacityAttribute.php" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/Models/AttributeModel/ColorAttribute.php" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/Models/AttributeModel/SizeAttribute.php" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/Models/AttributeModel/TouchIdKeyboardAttribute.php" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/Models/CategoryModels/AllCategory.php" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/Models/CategoryModels/ClothesCategory.php" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/Models/CategoryModels/TechCategory.php" dialect="GenericSQL" />

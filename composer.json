@@ -13,6 +13,6 @@
         "nikic/fast-route": "^1.3",
         "webonyx/graphql-php": "^15.2",
       "ext-pdo": "*",
-      "ext-mongodb": "*"
+        "vlucas/phpdotenv": "^5.6"
     }
 }

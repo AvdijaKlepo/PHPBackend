@@ -4,7 +4,7 @@ namespace App\Models\AttributeModel;
 use App\Models\AbstractModels\AbstractAttribute;
 use PDO;
 
-class TouchIDKeyboardAttribute extends AbstractAttribute
+class TouchIdKeyboardAttribute extends AbstractAttribute
 {
     public function getAttribute(string $productId): array
     {

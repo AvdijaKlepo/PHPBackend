@@ -62,7 +62,6 @@ class ProductType extends ObjectType
 
             return !empty($attributes) ? $attributes : null;
         } catch (\Exception $e) {
-            // Log the exception and return null
             error_log($e->getMessage());
             return null;
         }

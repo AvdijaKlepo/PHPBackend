@@ -6,7 +6,7 @@ use App\Models\AttributeModel\ColorAttribute;
 use App\Models\AttributeModel\SizeAttribute;
 use App\Models\AttributeModel\CapacityAttribute;
 use App\Models\AttributeModel\Usb3PortsAttribute;
-use App\Models\AttributeModel\TouchIDKeyboardAttribute;
+use App\Models\AttributeModel\TouchIdKeyboardAttribute;
 use PDO;
 
 class AttributeFactory
@@ -19,7 +19,7 @@ class AttributeFactory
             'size' => new SizeAttribute($pdo),
             'capacity' => new CapacityAttribute($pdo),
             'with usb 3 ports' => new Usb3PortsAttribute($pdo),
-            'touch id in keyboard' => new TouchIDKeyboardAttribute($pdo),
+            'touch id in keyboard' => new TouchIdKeyboardAttribute($pdo),
             default => throw new \InvalidArgumentException("Unsupported attribute type: $attributeName"),
         };
     }

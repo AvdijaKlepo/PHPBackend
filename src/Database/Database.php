@@ -6,25 +6,19 @@ use PDOException;
 
 class Database
 {
-    private mixed $host;
-    private mixed $db;
-    private mixed $username;
-    private mixed $password;
     private $conn;
-
-    public function __construct(array $config)
-    {
-        $this->host = $config['host'] ?? '';
-        $this->db = $config['db_name'] ?? '';
-        $this->username = $config['username'] ?? '';
-        $this->password = $config['password'] ?? '';
-    }
 
     public function connect():PDO
     {
         if($this->conn == null){
             try {
-                $this->conn = new PDO("mysql:host=$this->host;dbname=$this->db", $this->username, $this->password);
+
+                $host = $_ENV['DB_HOST'];
+                $db = $_ENV['DB_NAME'];
+                $username = $_ENV['DB_USERNAME'];
+                $password = $_ENV['DB_PASSWORD'];
+
+                $this->conn = new PDO("mysql:host=$host;dbname=$db", $username, $password);
                 $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             }catch(PDOException $e){
                 error_log("Connection failed: ".$e->getMessage());

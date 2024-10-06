@@ -1,9 +1,9 @@
 RewriteEngine on
 
-# Prevent rewriting if the request is already for the /public/ directory
+
 RewriteCond %{REQUEST_URI} !^/public/
 
 RewriteRule .* /public/$0 [L]
 
-# Set the DirectoryIndex to index.php within the /public/ directory
+
 DirectoryIndex public/index.php

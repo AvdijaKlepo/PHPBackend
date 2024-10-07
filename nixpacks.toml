@@ -1,3 +1,10 @@
-[nixpacks]
-build = "composer install --no-dev --optimize-autoloader"
-run = "php -S 0.0.0.0:$PORT -t public/"
+[phases.setup]
+# This will install Composer dependencies
+cmds = ["composer install --no-dev --optimize-autoloader"]
+
+[phases.build]
+cmds = ["echo 'Build phase complete'"]
+
+[phases.start]
+# Starting the PHP server
+cmds = ["php -S 0.0.0.0:${PORT} -t public"]

@@ -1,0 +1,3 @@
+[nixpacks]
+build = "composer install --no-dev --optimize-autoloader"
+run = "php -S 0.0.0.0:$PORT -t public/"
